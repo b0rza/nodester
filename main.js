@@ -1,20 +1,25 @@
-var fs = require('fs');
-var path = require('path');
-var readFilter = require('./readFilter.js');
+var http = require('http');
+var responseReader = require('./responseReader.js');
 
-var currFile = '/home/borza/workspace/nodester/main.js'
-var currDir = '/home/borza/workspace/nodester'
+var urls = process.argv.splice(2)
 
-var currDir = process.argv[2];
-var extension = process.argv[3];
+http.get(urls[0], function callback (response) {
+  responseReader(response, function (err, data) {
+    if(err){ return console.log('Error: ' + err); };
+    console.log(data);
 
-readFilter(currDir, extension, function(err, files) {
+    http.get(urls[1], function callback (response) {
+      responseReader(response, function (err, data) {
+        if(err){ return console.log('Error: ' + err); };
+        console.log(data);
 
-  if (err) {
-    return console.log('An error: ' + err);
-  }
-
-  for (var i = 0; i < files.length; i++) {
-    console.log(files[i]);
-  }
+        http.get(urls[2], function callback (response) {
+          responseReader(response, function (err, data) {
+            if(err){ return console.log('Error: ' + err); };
+            console.log(data);
+          });
+        });
+      });
+    });
+  });
 });
